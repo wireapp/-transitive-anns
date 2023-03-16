@@ -97,7 +97,7 @@ exposeAnnotations = id
 --     ay = annotated y
 -- @@
 --
--- This is truly naughty and anethema to everything we hold sacred in Haskell.
+-- This is truly naughty and anathema to everything we hold sacred in Haskell.
 -- Never use 'KnownAnnotations'. It exists only so we have something to write
 -- tests against.
 --

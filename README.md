@@ -1,62 +1,71 @@
 # transitive-anns
 
+> There are no constraints on the human mind, no walls around the human spirit,
+> no barriers to our progress except those we ourselves erect.
+
 ## Overview
 
-This package is a small compiler plugin that transitively propagates, and
-reifies, annotations. To get started, try attaching some annotations to some
-values:
+This package is a small compiler plugin that invisibly passes around unsolved
+constraints for you. The idea is that you'd like to use unsolved constraints to
+document some feature of your codebase, perhaps exposing this to servant.
+
+Unfortunately, in the real world, passing around dozens of unsolved constraints
+just for documentation feels a lot like doing the compiler's job for it.
+`transitive-anns` automates this process, throwing the task right back to the
+compiler.
+
+Let's see how it works.
 
 ```haskell
 {-# OPTIONS_GHC -fplugin=TransitiveAnns.Plugin #-}
 
 import TransitiveAnns.Types
 
-{-# ANN test3 (Annotation Remote "hello from" "test3") #-}
-test3 :: Int
+test3 :: AddAnnotation 'Remote "hello from" "test3" x => Int
 test3 = 4
 
-{-# ANN test2 (Annotation Remote "hello from" "test2") #-}
-test2 :: Int
+test2 :: AddAnnotation 'Remote "hello from" "test2" x => Int
 test2 = test3
 ```
 
-and then we can reify them:
+The plugin with automatically solve these `AddAnnotation` constraints, meaning
+we do not need to add a `AddAnnotation 'Remote "hello from" "test3" x` constraint
+to `test2`.
+
+When we'd like to re-expose these constraints, we can do this:
 
 ```haskell
-test :: ([Annotation], Int)
-test = withAnnotations test2
+test :: ToHasAnnotations x => Int
+test = exposeAnnotations test2
 ```
 
-with result:
+where `ToHasAnnotations x` will magically expand to the following constraints:
+
 
 ```haskell
-( [ Annotation Remote "hello from" "test3"
-  , Annotation Remote "hello from" "test2"
-  ]
-, 4
+( HasAnnotation 'Remote "hello from" "test2"
+, HasAnnotation 'Remote "hello from" "test3"
 )
 ```
 
-Better yet, it works across module boundaries!
+Solving a `ToHasAnnotations` constraint automatically looks at the transitive
+closure of every function called by the argument of `exposeAnnotations`, adding
+a 'HasAnnotation' constraint for every 'AddAnnotation' solved.
+
+Better yet, it all works across module boundaries!
 
 
 ## Nitty Gritty Details
 
 Internally, this plugin consists of two parts: a CoreToDo plugin, and a
-typechecker plugin. The CoreToDo runs after the module has been compiled, looks
-up every function with an `Annotation`, and then also attaches it to any
-function which *calls* an annotated function. These get stuck in the `ModIface`,
-so they are cached in the compiled artifacts.
+typechecker plugin. The typechecker plugin is responsible for solving the
+constraints, and in particular, it stashes `AddAnnotation` constraints away as
+actual `ANN` annotations in the compiled `ModIface`. This ensures the
+constraints are cached in the compiled artifacts and thus work across
+module/package boundaries.
 
-The other half of the plugin is a solver for the following class:
-
-```haskell
-class KnownAnnotations where
-  annotationsVal :: [Annotation]
-```
-
-which returns every annotation attached to the *function calling*
-`annotationsVal`. Of course, this dispatch plays nicely with the usual
-constraint system, so you can delay its evaluation by adding a
-`KnownAnnotations =>` given constraint to your type signature.
+The CoreToDo runs after the module has been compiled, looks up every function
+with a generated `ANN`, and then also attaches it to any function which *calls*
+an annotated function. This mechanism is responsible for transitively
+propagating the annotations across the call tree.
 

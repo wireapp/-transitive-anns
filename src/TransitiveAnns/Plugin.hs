@@ -1,27 +1,29 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE CPP #-}
 
 module TransitiveAnns.Plugin where
 
 import           Data.Data
-import           Data.Foldable (fold)
-import           Data.IORef (newIORef, modifyIORef', writeIORef, readIORef)
-import qualified Data.Map as M
-import           Data.Maybe (mapMaybe)
-import qualified Data.Set as S
-import           Data.Traversable (for)
-import           GHC (Class, GhcTc, LHsBindsLR)
-import           GHC.Core.Class (classTyCon)
-import           GHC.Data.Bag (bagToList)
-import           GHC.Plugins hiding (TcPlugin, (<>), empty)
+import           Data.Foldable                     (fold)
+import           Data.IORef                        (modifyIORef', newIORef,
+                                                    readIORef, writeIORef)
+import qualified Data.Map                          as M
+import           Data.Maybe                        (mapMaybe)
+import qualified Data.Set                          as S
+import           Data.Traversable                  (for)
+import           GHC                               (Class, GhcTc, LHsBindsLR)
+import           GHC.Core.Class                    (classTyCon)
+import           GHC.Data.Bag                      (bagToList)
+import           GHC.Plugins                       hiding (TcPlugin, empty,
+                                                    (<>))
 import           GHC.Tc.Types.Constraint
-import           GHC.Tc.Types.Evidence (EvTerm(EvExpr))
+import           GHC.Tc.Types.Evidence             (EvTerm (EvExpr))
 import           GHC.Tc.Utils.Monad
-import           GHC.Tc.Utils.TcMType (newWanted)
-import           System.IO.Unsafe (unsafePerformIO)
+import           GHC.Tc.Utils.TcMType              (newWanted)
+import           System.IO.Unsafe                  (unsafePerformIO)
 import           TransitiveAnns.Plugin.Annotations
 import           TransitiveAnns.Plugin.Core
 import           TransitiveAnns.Plugin.Utils
-import qualified TransitiveAnns.Types as TA
+import qualified TransitiveAnns.Types              as TA
 
 
 ------------------------------------------------------------------------------
@@ -36,6 +38,9 @@ plugin = defaultPlugin
           lookupTransitiveAnnsData
       , tcPluginSolve = solve
       , tcPluginStop = const $ pure ()
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+      , tcPluginRewrite = const emptyUFM
+#endif
       }
   , pluginRecompile  = purePlugin
   }
@@ -89,22 +94,22 @@ transitiveAnnEnv annenv binds =
 findWanted :: Class -> Ct -> Maybe Ct
 findWanted c ct = do
   let p = ctev_pred $ cc_ev ct
-  case splitTyConApp_maybe p of
-    Just (x, _) ->
-      case x == classTyCon c of
-        True -> Just ct
-        False -> Nothing
-    _ -> Nothing
+  splitTyConApp_maybe p >>= \(x, _) ->
+     if x == classTyCon c then Just ct else Nothing
 
 
 ------------------------------------------------------------------------------
 -- | The entry-point to the TC plugin. This is responsible for solving
--- AddAnnotation, KnownAnnotation and ToHasAnnotations nstraints
+-- AddAnnotation, KnownAnnotation and ToHasAnnotations constraints
 solve :: TransitiveAnnsData -> TcPluginSolver
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+solve tad _ gs ws = do
+#else
 solve tad gs ds ws' = do
   -- Our to-solve wanteds might have been derived, so add the deriveds to the
   -- wanteds.
   let ws = ws' <> ds
+#endif
   -- Because of our skolem trick, GHC doesn't recognize that we'd like to solve
   -- a wanted with a given. This function only attemps to solve the class if
   -- there are no givens for the class in scope.
@@ -117,8 +122,7 @@ solve tad gs ds ws' = do
 
   -- Try to solve the three classes
   adds <- over solveAddAnn tad_add_ann
-  (has_ev, has_new)
-    <- fmap unzip $ over solveToHasAnns tad_to_has_ann
+  (has_ev, has_new) <- unzip <$> over solveToHasAnns tad_to_has_ann
   knowns <- over solveKnownAnns tad_knownanns
   let res = concat $ adds <> knowns
   pure $ TcPluginOk (res <> has_ev) $ concat has_new
@@ -217,8 +221,7 @@ solveAddAnn tad to_add
              $ toSerialized serializeWithData ann
     unsafeTcPluginTcM
       $ liftIO
-      $ modifyIORef' unsafeAnnsToAddRef
-      $ (annx :)
+      $ modifyIORef' unsafeAnnsToAddRef (annx :)
     pure $ pure (EvExpr $ mkAddAnnDict tad ann, to_add)
   | otherwise = pure []
 

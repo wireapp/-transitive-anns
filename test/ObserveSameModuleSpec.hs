@@ -1,6 +1,6 @@
 module ObserveSameModuleSpec where
 
-import qualified Data.Set as S
+import qualified Data.Set             as S
 import           ObserveSameModule
 import           Test.Hspec
 import           TransitiveAnns.Types

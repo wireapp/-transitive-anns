@@ -1,10 +1,10 @@
 module RingSpec where
 
-import qualified Data.Set as S
-import Data.Set (Set)
-import TransitiveAnns.Types
-import Ring
-import Test.Hspec
+import           Data.Set             (Set)
+import qualified Data.Set             as S
+import           Ring
+import           Test.Hspec
+import           TransitiveAnns.Types
 
 
 

@@ -1,10 +1,10 @@
 module MultipleSpec where
 
-import qualified Data.Set as S
-import Data.Set (Set)
-import TransitiveAnns.Types
-import Test.Hspec
-import MultipleVia
+import           Data.Set             (Set)
+import qualified Data.Set             as S
+import           MultipleVia
+import           Test.Hspec
+import           TransitiveAnns.Types
 
 
 {-# ANN t1 (Annotation Local "t1" "a") #-}
@@ -21,7 +21,7 @@ t3 :: Bool
 t3 = False
 
 t123 :: Bool
-t123 = and [t1, t2, t3]
+t123 = t1 && t2 && t3
 
 obs :: Set Annotation
 obs = annotated t123

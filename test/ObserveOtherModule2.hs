@@ -1,6 +1,6 @@
 module ObserveOtherModule2 where
 
-import TransitiveAnns.Types
+import           TransitiveAnns.Types
 
 -- Has direct ANN
 {-# ANN otherRefAnn (Annotation Local "othermodule2" "ann") #-}

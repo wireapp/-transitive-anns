@@ -4,10 +4,10 @@
 
 module LetBindingSpec where
 
-import GHC.TypeLits
-import qualified Data.Set as S
-import TransitiveAnns.Types
-import Test.Hspec
+import qualified Data.Set             as S
+import           GHC.TypeLits
+import           Test.Hspec
+import           TransitiveAnns.Types
 
 fedClient
     :: forall (api :: Symbol) (name :: Symbol) x
@@ -16,6 +16,7 @@ fedClient
     -> Int
 fedClient _ = 5
 
+{-# ANN notifyUserDeleted "HLint: ignore Evaluate" #-}
 notifyUserDeleted :: String -> ()
 notifyUserDeleted str = do
   let b = null str

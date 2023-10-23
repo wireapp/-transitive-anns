@@ -1,7 +1,7 @@
 module ObserveSameModule where
 
-import Data.Set (Set)
-import TransitiveAnns.Types
+import           Data.Set             (Set)
+import           TransitiveAnns.Types
 
 {-# ANN ref (Annotation Local "ref" "ref") #-}
 ref :: Int

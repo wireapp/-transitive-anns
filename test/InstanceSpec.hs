@@ -2,12 +2,12 @@
 
 module InstanceSpec where
 
-import qualified Data.Set as S
-import Data.Set (Set)
-import TransitiveAnns.Types
-import Test.Hspec
-import GHC.TypeLits
-import InstanceVia
+import           Data.Set             (Set)
+import qualified Data.Set             as S
+import           GHC.TypeLits
+import           InstanceVia
+import           Test.Hspec
+import           TransitiveAnns.Types
 
 
 test :: forall (comp :: Symbol) (name :: Symbol) x. AddAnnotation 'Remote comp name x => Int

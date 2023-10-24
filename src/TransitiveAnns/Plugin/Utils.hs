@@ -1,5 +1,6 @@
 {-# LANGUAGE LambdaCase   #-}
 {-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE CPP          #-}
 
 module TransitiveAnns.Plugin.Utils where
 
@@ -21,6 +22,9 @@ import           GHC.Tc.Plugin (findImportedModule, lookupOrig, tcLookupClass, t
 import           GHC.Tc.Types.Constraint
 import           GHC.Tc.Utils.Monad
 import qualified TransitiveAnns.Types as TA
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+import GHC.Utils.Trace (pprTrace)
+#endif
 
 
 ------------------------------------------------------------------------------
@@ -40,7 +44,11 @@ data TransitiveAnnsData = TransitiveAnnsData
 lookupTransitiveAnnsData :: TcPluginM TransitiveAnnsData
 lookupTransitiveAnnsData = do
     Found _ tys_mod
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+      <- findImportedModule (mkModuleName "TransitiveAnns.Types") NoPkgQual
+#else
       <- findImportedModule (mkModuleName "TransitiveAnns.Types") Nothing
+#endif
     known      <- lookupOrig tys_mod $ mkTcOcc "KnownAnnotations"
     add_ann    <- lookupOrig tys_mod $ mkTcOcc "AddAnnotation"
     to_has_ann <- lookupOrig tys_mod $ mkTcOcc "ToHasAnnotations"
@@ -85,8 +93,8 @@ parsePromotedAnn tad ty = do
   guard $ dataConTyCon loc_dc == tad_loc_tc tad
   let loc = toEnum $ dataConTag loc_dc - 1
 
-  api <- fmap unpackFS $ isStrLitTy api_ty
-  method <- fmap unpackFS $ isStrLitTy method_ty
+  api <- unpackFS <$> isStrLitTy api_ty
+  method <- unpackFS <$> isStrLitTy method_ty
   pure $ TA.Annotation loc api method
 
 
@@ -122,7 +130,11 @@ getDec bs ss = listToMaybe $ do
   L _ b <- bagToList bs
   everything (<>) (mkQ [] $ \case
       L (SrcSpanAnn _ (RealSrcSpan ss' _))
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+        (XHsBindsLR (AbsBinds _ _ [ABE poly _ _ _] _ (bagToList -> [L _ FunBind{}]) _))
+#else
         (AbsBinds _ _ _ [ABE _ poly _ _ _] _ (bagToList -> [L _ FunBind{}]) _)
+#endif
         | containsSpan ss' ss -> pure (poly, b)
       L (SrcSpanAnn _ (RealSrcSpan ss' _)) (FunBind {fun_id = L _ n'})
         | containsSpan ss' ss -> pure (n', b)

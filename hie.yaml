@@ -1,2 +1,7 @@
 cradle:
-  stack: {}
+  cabal:
+    - path: "src"
+      component: "lib:transitive-anns"
+
+    - path: "test"
+      component: "transitive-anns:test:test"

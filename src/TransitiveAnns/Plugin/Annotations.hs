@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP          #-}
 {-# LANGUAGE ViewPatterns #-}
 
 module TransitiveAnns.Plugin.Annotations
@@ -9,17 +10,17 @@ module TransitiveAnns.Plugin.Annotations
   , hsBinds
   ) where
 
-import           Data.Data hiding (TyCon)
-import           Data.Functor ((<&>))
-import           Data.Generics (everything, mkQ)
-import           Data.Map (Map)
-import qualified Data.Map as M
-import           Data.Map.Monoidal (MonoidalMap)
-import qualified Data.Map.Monoidal as MM
-import           Data.Set (Set)
-import qualified Data.Set as S
-import           GHC.Hs hiding (anns)
-import           GHC.Plugins hiding (TcPlugin, (<>), empty)
+import           Data.Data            hiding (TyCon)
+import           Data.Functor         ((<&>))
+import           Data.Generics        (everything, mkQ)
+import           Data.Map             (Map)
+import qualified Data.Map             as M
+import           Data.Map.Monoidal    (MonoidalMap)
+import qualified Data.Map.Monoidal    as MM
+import           Data.Set             (Set)
+import qualified Data.Set             as S
+import           GHC.Hs               hiding (anns)
+import           GHC.Plugins          hiding (TcPlugin, empty, (<>))
 import qualified TransitiveAnns.Types as TA
 
 
@@ -29,8 +30,13 @@ hsBinds :: HsBindLR GhcTc GhcTc -> Maybe (Var, Set Var)
 hsBinds (FunBind _ (L _ gl) mg _) = Just (gl, getVars mg)
 hsBinds PatBind{} = Nothing
 hsBinds VarBind{} = Nothing
-hsBinds (AbsBinds _ _ _ [(ABE _ nm _ _ _)] _ bag _) = Just (nm, getVars bag)
-hsBinds (AbsBinds _ _ _ _ _ _ _) = Nothing
+#if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)
+hsBinds (XHsBindsLR (AbsBinds _ _ [ABE nm _ _ _] _ bag _)) = Just (nm, getVars bag)
+hsBinds (XHsBindsLR (AbsBinds {})) = Nothing
+#else
+hsBinds (AbsBinds _ _ _ [ABE _ nm _ _ _] _ bag _) = Just (nm, getVars bag)
+hsBinds AbsBinds {} = Nothing
+#endif
 hsBinds PatSynBind{} = Nothing
 
 
@@ -38,7 +44,7 @@ hsBinds PatSynBind{} = Nothing
 -- | Apply a function over all binds, accumulating the results into a map.
 forBinds :: Ord b => (Expr b -> r) -> Bind b -> Map b r
 forBinds f (NonRec b ex) = M.singleton b $ f ex
-forBinds f (Rec x0) = foldMap (\(b, e) -> M.singleton b $ f e) x0
+forBinds f (Rec x0)      = foldMap (\(b, e) -> M.singleton b $ f e) x0
 
 
 ------------------------------------------------------------------------------

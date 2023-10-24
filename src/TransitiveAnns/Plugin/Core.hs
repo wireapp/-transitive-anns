@@ -1,10 +1,10 @@
 module TransitiveAnns.Plugin.Core where
 
-import           Data.String (fromString)
-import           GHC.Core.Class (Class)
-import           GHC.Plugins hiding (TcPlugin, (<>), empty)
+import           Data.String                 (fromString)
+import           GHC.Core.Class              (Class)
+import           GHC.Plugins                 hiding (TcPlugin, empty, (<>))
 import           TransitiveAnns.Plugin.Utils
-import qualified TransitiveAnns.Types as TA
+import qualified TransitiveAnns.Types        as TA
 
 ------------------------------------------------------------------------------
 -- | Make a string literal in core. Leads to less-efficient core than the

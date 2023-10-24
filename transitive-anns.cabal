@@ -1,90 +1,101 @@
-cabal-version: 1.12
+cabal-version:      1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.2.
 --
 -- see: https://github.com/sol/hpack
 
-name:           transitive-anns
-version:        0.1.0.0
-description:    Please see the README on GitHub at <https://github.com/isovector/transitive-anns#readme>
-homepage:       https://github.com/isovector/transitive-anns#readme
-bug-reports:    https://github.com/isovector/transitive-anns/issues
-author:         Sandy Maguire
-maintainer:     sandy@sandymaguire.me
-copyright:      Sandy Maguire
-license:        BSD3
-license-file:   LICENSE
-build-type:     Simple
+name:               transitive-anns
+version:            0.1.0.0
+description:
+  Please see the README on GitHub at <https://github.com/isovector/transitive-anns#readme>
+
+homepage:           https://github.com/isovector/transitive-anns#readme
+bug-reports:        https://github.com/isovector/transitive-anns/issues
+author:             Sandy Maguire
+maintainer:         sandy@sandymaguire.me
+copyright:          Sandy Maguire
+license:            BSD3
+license-file:       LICENSE
+build-type:         Simple
 extra-source-files:
-    README.md
-    CHANGELOG.md
+  CHANGELOG.md
+  README.md
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/isovector/transitive-anns
 
 library
   exposed-modules:
-      TransitiveAnns.Plugin
-      TransitiveAnns.Plugin.Annotations
-      TransitiveAnns.Plugin.Core
-      TransitiveAnns.Plugin.Utils
-      TransitiveAnns.Types
-  other-modules:
-      Paths_transitive_anns
-  hs-source-dirs:
-      src
+    TransitiveAnns.Plugin
+    TransitiveAnns.Plugin.Annotations
+    TransitiveAnns.Plugin.Core
+    TransitiveAnns.Plugin.Utils
+    TransitiveAnns.Types
+
+  other-modules:      Paths_transitive_anns
+  hs-source-dirs:     src
   default-extensions:
-      AllowAmbiguousTypes
-      DataKinds
-      FlexibleContexts
-      ScopedTypeVariables
-      TypeApplications
-      KindSignatures
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+    AllowAmbiguousTypes
+    DataKinds
+    FlexibleContexts
+    KindSignatures
+    ScopedTypeVariables
+    TypeApplications
+
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+
   build-depends:
-      base >=4.7 && <5
+      base                 >=4.7 && <5
     , containers
     , ghc
     , ghc-tcplugins-extra
     , hspec
     , monoidal-containers
     , syb
-  default-language: Haskell2010
+
+  default-language:   Haskell2010
 
 test-suite test
-  type: exitcode-stdio-1.0
-  main-is: Main.hs
+  type:               exitcode-stdio-1.0
+  main-is:            Main.hs
   other-modules:
-      InstanceSpec
-      InstanceVia
-      LetBindingSpec
-      MultipleSpec
-      MultipleVia
-      ObserveOtherModule
-      ObserveOtherModule2
-      ObserveOtherModuleSpec
-      ObserveSameModule
-      ObserveSameModuleSpec
-      Ring
-      RingSpec
-      ToHasAnnsSpec
-      TyFamSpec
-      Paths_transitive_anns
-  hs-source-dirs:
-      test
+    InstanceSpec
+    InstanceVia
+    LetBindingSpec
+    MultipleSpec
+    MultipleVia
+    ObserveOtherModule
+    ObserveOtherModule2
+    ObserveOtherModuleSpec
+    ObserveSameModule
+    ObserveSameModuleSpec
+    Paths_transitive_anns
+    Ring
+    RingSpec
+    ToHasAnnsSpec
+    TyFamSpec
+
+  hs-source-dirs:     test
   default-extensions:
-      AllowAmbiguousTypes
-      DataKinds
-      FlexibleContexts
-      ScopedTypeVariables
-      TypeApplications
-      KindSignatures
-  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N -fplugin=TransitiveAnns.Plugin -fno-warn-redundant-constraints -dcore-lint
-  build-tool-depends:
-      hspec-discover:hspec-discover >=2.0
+    AllowAmbiguousTypes
+    DataKinds
+    FlexibleContexts
+    KindSignatures
+    ScopedTypeVariables
+    TypeApplications
+
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints
+    -threaded -rtsopts -with-rtsopts=-N -fplugin=TransitiveAnns.Plugin
+    -fno-warn-redundant-constraints -dcore-lint
+
+  build-tool-depends: hspec-discover:hspec-discover >=2.0
   build-depends:
-      base >=4.7 && <5
+      base                 >=4.7 && <5
     , containers
     , ghc
     , ghc-tcplugins-extra
@@ -92,4 +103,5 @@ test-suite test
     , monoidal-containers
     , syb
     , transitive-anns
-  default-language: Haskell2010
+
+  default-language:   Haskell2010

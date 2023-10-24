@@ -1,6 +1,6 @@
 module MultipleVia where
 
-import TransitiveAnns.Types
+import           TransitiveAnns.Types
 
 
 {-# ANN vt1 (Annotation Local "vt1" "a") #-}
@@ -17,5 +17,5 @@ vt3 :: Bool
 vt3 = False
 
 vt123 :: Bool
-vt123 = and [vt1, vt2, vt3]
+vt123 = vt1 && vt2 && vt3
 

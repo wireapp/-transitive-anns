@@ -1,6 +1,6 @@
 module Ring where
 
-import TransitiveAnns.Types
+import           TransitiveAnns.Types
 
 {-# ANN r1 (Annotation Local "ring" "1") #-}
 r1 :: Int

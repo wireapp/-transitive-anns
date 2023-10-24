@@ -1,2 +1,6 @@
 .stack-work/
 *~
+.direnv
+dist*
+result*
+.pre-commit-config.yaml

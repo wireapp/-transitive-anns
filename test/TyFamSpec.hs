@@ -5,10 +5,10 @@
 
 module TyFamSpec where
 
-import qualified Data.Set as S
-import TransitiveAnns.Types
-import Test.Hspec
-import GHC.TypeLits
+import qualified Data.Set             as S
+import           GHC.TypeLits
+import           Test.Hspec
+import           TransitiveAnns.Types
 
 data Component = Brig | Galley
 

@@ -1,7 +1,6 @@
-{-# LANGUAGE FlexibleInstances      #-}
-{-# LANGUAGE MultiParamTypeClasses  #-}
-{-# LANGUAGE TypeOperators          #-}
-{-# LANGUAGE UndecidableInstances   #-}
+{-# LANGUAGE FlexibleInstances     #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+{-# LANGUAGE UndecidableInstances  #-}
 
 -- COMMENT THIS LINE TO RUN THE TEST
 
@@ -9,8 +8,8 @@
 
 module ToHasAnnsSpec where
 
-import TransitiveAnns.Types
-import Test.Hspec
+import           Test.Hspec
+import           TransitiveAnns.Types
 
 {-# ANN test (Annotation Local "hello" "goodbye") #-}
 {-# ANN test (Annotation Remote "soup" "gumbo") #-}

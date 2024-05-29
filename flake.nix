@@ -26,7 +26,6 @@
             hlint.enable = true;
 
             alejandra.enable = true;
-            statix.enable = true;
             deadnix.enable = true;
           };
         };
@@ -38,10 +37,16 @@
           devShell.mkShellArgs.shellHook = config.pre-commit.installationScript;
         };
 
-        haskellProjects.default = {
+        haskellProjects.ghc94 = {
           packages = {};
           settings = {};
           basePackages = pkgs.haskell.packages.ghc94;
+          devShell.mkShellArgs.shellHook = config.pre-commit.installationScript;
+        };
+        haskellProjects.default = {
+          packages = {};
+          settings = {};
+          basePackages = pkgs.haskellPackages;
           devShell.mkShellArgs.shellHook = config.pre-commit.installationScript;
         };
       };

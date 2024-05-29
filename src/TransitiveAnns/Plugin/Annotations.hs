@@ -27,7 +27,7 @@ import qualified TransitiveAnns.Types as TA
 ------------------------------------------------------------------------------
 -- | Get the name and set of referenced variables for a binding.
 hsBinds :: HsBindLR GhcTc GhcTc -> Maybe (Var, Set Var)
-hsBinds (FunBind _ (L _ gl) mg _) = Just (gl, getVars mg)
+hsBinds FunBind {fun_id = (L _ gl), fun_matches = mg} = Just (gl, getVars mg)
 hsBinds PatBind{} = Nothing
 hsBinds VarBind{} = Nothing
 #if MIN_VERSION_GLASGOW_HASKELL(9,4,0,0)

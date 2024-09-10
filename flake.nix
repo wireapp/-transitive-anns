@@ -31,22 +31,19 @@
         };
 
         haskellProjects.ghc92 = {
-          packages = {};
-          settings = {};
           basePackages = pkgs.haskell.packages.ghc92;
           devShell.mkShellArgs.shellHook = config.pre-commit.installationScript;
         };
-
         haskellProjects.ghc94 = {
-          packages = {};
-          settings = {};
           basePackages = pkgs.haskell.packages.ghc94;
           devShell.mkShellArgs.shellHook = config.pre-commit.installationScript;
         };
-        haskellProjects.default = {
-          packages = {};
-          settings = {};
-          basePackages = pkgs.haskellPackages;
+        haskellProjects.ghc96 = {
+          basePackages = pkgs.haskell.packages.ghc96;
+          devShell.mkShellArgs.shellHook = config.pre-commit.installationScript;
+        };
+        haskellProjects.ghc98 = {
+          basePackages = pkgs.haskell.packages.ghc98;
           devShell.mkShellArgs.shellHook = config.pre-commit.installationScript;
         };
       };

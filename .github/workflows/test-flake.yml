@@ -12,6 +12,7 @@ jobs:
       with:
         github_access_token: ${{ secrets.GITHUB_TOKEN }}
     - run: nix flake check -Lv --allow-import-from-derivation --fallback --accept-flake-config
-    - run: nix build .#transitive-anns -Lv --fallback --accept-flake-config
+    - run: nix build .#ghc96-transitive-anns -Lv --fallback --accept-flake-config
+    - run: nix build .#ghc98-transitive-anns -Lv --fallback --accept-flake-config
     - run: nix build .#ghc94-transitive-anns -Lv --fallback --accept-flake-config
     - run: nix build .#ghc92-transitive-anns -Lv --fallback --accept-flake-config

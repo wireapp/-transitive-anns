@@ -93,7 +93,11 @@ transitiveAnnEnv annenv binds =
 -- | Determine if the given constraint is of the given class.
 findWanted :: Class -> Ct -> Maybe Ct
 findWanted c ct = do
+#if MIN_VERSION_GLASGOW_HASKELL(9,8,0,0)
+  let p = ctev_pred $ ctEvidence ct
+#else 
   let p = ctev_pred $ cc_ev ct
+#endif
   splitTyConApp_maybe p >>= \(x, _) ->
      if x == classTyCon c then Just ct else Nothing
 
@@ -213,7 +217,11 @@ solveKnownAnns tad known = do
 -- that we will install during the core plugin.
 solveAddAnn :: TransitiveAnnsData -> Ct -> TcPluginM [(EvTerm, Ct)]
 solveAddAnn tad to_add
+#if MIN_VERSION_GLASGOW_HASKELL(9,8,0,0)
+  | Just ann <- parsePromotedAnn tad $ ctev_pred $ ctEvidence to_add
+#else
   | Just ann <- parsePromotedAnn tad $ ctev_pred $ cc_ev to_add
+#endif
   = do
     decs <- unsafeTcPluginTcM $ tcg_binds <$> getGblEnv
     Just dec <- pure $ fmap fst $ getDec decs $ location to_add
